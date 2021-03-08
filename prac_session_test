@@ -1,0 +1,134 @@
+var preload = {
+    type: 'preload',
+    auto_preload: true 
+}
+
+var timeline = [];
+
+var instruction = {
+  type: 'html-button-response',
+  stimulus: '<p>ではまず音量を確認しましょう。</p>',
+  choices: ['次に'],
+  prompt: "<p>今から音が再生されるので、はっきり聞こえるよう音量を調整してください</p>"
+};
+  
+timeline.push(instruction);
+/*音量調整*/
+
+var volumetest = {
+  type: 'audio-button-response',
+  stimulus: "sound/pianolong.wav",
+  prompt: "<p>ピアノの音楽ははっきり聞こえていますか。</p>"+
+    "<p>はっきり聞こえない場合は音量をあげてください。</p>",
+  choices: ['はい、音量は大丈夫です'],
+  response_allowed_while_playing: true,
+};
+  
+timeline.push(volumetest);
+  
+var test_ok = {
+  type: 'html-button-response',
+  choices: ['次に'],
+  stimulus: "<p>よかったです。次は実験の練習問題です。</p>"+
+      "<p>2つのメロディーが同じだと思ったら[同じ]をクリックしてください。</p>" +
+      "<p>2つのメロディーが違うと思ったら[違う]をクリックしてください。</p>"　+
+      "ではやってみましょう！"
+};
+
+timeline.push(test_ok);
+  
+  
+/*実験の練習問題*/
+
+
+var trial_num = [0, 1, 2, 3, 4]
+var trial_num = jsPsych.randomization.shuffle(trial_num);
+
+var trial1 = {
+  stimulus: 'sound/aa261.wav',
+  button: '0'
+};
+
+var trial2 = {
+  stimulus: 'sound/ax263.wav',
+  button: '1'
+};
+
+var trial3 = {
+  stimulus: 'sound/ax264.wav',
+  button: '1'
+};
+
+var trial4 = {
+  stimulus: 'sound/ax265.wav',
+  button: '1'
+};
+
+var trial5 = {
+  stimulus: 'sound/ax276.wav',
+  button: '1'
+};
+
+
+var trial_audio = [
+  trial1.stimulus,
+  trial2.stimulus,
+  trial3.stimulus,
+  trial4.stimulus,
+  trial5.stimulus,
+];
+
+for (i in trial_num){
+  jsPsych.data.addProperties({
+    trial:trial_num
+  });  
+  
+//practice session
+
+  timeline.push({
+    type: 'audio-button-response',
+    stimulus: trial_audio[trial_num[i]],
+    prompt: "<p>この二つの音声は同じですか</p>",
+    choices: ['同じ', '違う'],
+    response_allowed_while_playing: false,
+    on_finish: function(data){
+          if(data.button_pressed == data.button){
+                data.correct = true;
+          } else {
+            data.correct = false;
+            }
+    }
+  })
+  
+    timeline.push({
+      type: 'html-button-response',
+      choices: ['次の練習問題に挑戦する'],
+      stimulus: function(){
+        let last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+          if (last_trial_correct) {
+          return "<p>そうそう、こんな感じです。よくできました!</p>";
+       } else {
+          return "<p>残念でした。音量は大丈夫ですか？</p>";
+       }
+   }
+  });
+  
+}
+
+var instruction = {
+  type: 'html-button-response',
+  stimulus: '<p>では本番に入りましょう。</p>',
+  choices: ['次に'],
+  prompt: "<p></p>"
+};
+  
+timeline.push(instruction);
+
+jsPsych.init({
+    timeline: timeline,
+    show_progress_bar: true,
+    message_progress_bar: '実験終了まで',
+    on_finish: function(){
+       jsPsych.data.displayData();
+    }
+});
