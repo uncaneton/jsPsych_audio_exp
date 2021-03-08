@@ -42,7 +42,7 @@ timeline.push(test_ok);
 
 
 var trial_num = [0, 1, 2, 3, 4]
-var trial_num = jsPsych.randomization.shuffle(trial_num);
+var trial_num2 = jsPsych.randomization.shuffle(trial_num);
 
 var trial1 = {
   stimulus: 'sound/aa261.wav',
@@ -78,16 +78,16 @@ var trial_audio = [
   trial5.stimulus,
 ];
 
-for (i in trial_num){
+for (var i in trial_num2){
   jsPsych.data.addProperties({
-    trial:trial_num
+    trial:trial_num2
   });  
   
 //practice session
 
   timeline.push({
     type: 'audio-button-response',
-    stimulus: trial_audio[trial_num[i]],
+    stimulus: trial_audio[trial_num2[i]],
     prompt: "<p>この二つの音声は同じですか</p>",
     choices: ['同じ', '違う'],
     response_allowed_while_playing: false,
