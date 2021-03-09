@@ -46,27 +46,27 @@ var trial_num2 = jsPsych.randomization.shuffle(trial_num);
 
 var trial1 = {
   stimulus: 'sound/aa261.wav',
-  button: '1'
+  button: '0'
 };
 
 var trial2 = {
   stimulus: 'sound/ax263.wav',
-  button: '0'
+  button: '1'
 };
 
 var trial3 = {
   stimulus: 'sound/ax264.wav',
-  button: '0'
+  button: '1'
 };
 
 var trial4 = {
   stimulus: 'sound/ax265.wav',
-  button: '0'
+  button: '1'
 };
 
 var trial5 = {
   stimulus: 'sound/ax276.wav',
-  button: '0'
+  button: '1'
 };
 
 
