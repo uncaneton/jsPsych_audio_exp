@@ -100,7 +100,7 @@ for (var i in trial_num2){
     choices: ['同じ', '違う'],
     response_allowed_while_playing: false,
     on_finish: function(data){
-          if(data.button_pressed == trial_num2[i]].button){
+          if(data.button_pressed == trial_num2[i].button){
                 data.correct = true;
           } else {
             data.correct = false;
