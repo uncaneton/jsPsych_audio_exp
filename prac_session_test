@@ -41,32 +41,32 @@ timeline.push(test_ok);
 /*実験の練習問題*/
 
 
-var trial_num = [0, 1, 2, 3, 4]
+var trial_num = [1, 2, 3, 4, 5]
 var trial_num2 = jsPsych.randomization.shuffle(trial_num);
 
 var trial1 = {
   stimulus: 'sound/aa261.wav',
-  button: '0'
+  button: '1'
 };
 
 var trial2 = {
   stimulus: 'sound/ax263.wav',
-  button: '1'
+  button: '0'
 };
 
 var trial3 = {
   stimulus: 'sound/ax264.wav',
-  button: '1'
+  button: '0'
 };
 
 var trial4 = {
   stimulus: 'sound/ax265.wav',
-  button: '1'
+  button: '0'
 };
 
 var trial5 = {
   stimulus: 'sound/ax276.wav',
-  button: '1'
+  button: '0'
 };
 
 
@@ -78,10 +78,18 @@ var trial_audio = [
   trial5.stimulus,
 ];
 
+var trial_button = [
+  trial1.button,
+  trial2.button,
+  trial3.button,
+  trial4.button,
+  trial5.button,
+];
+
 for (var i in trial_num2){
   jsPsych.data.addProperties({
     trial:trial_num2
-  });  
+ });  
   
 //practice session
 
@@ -92,7 +100,7 @@ for (var i in trial_num2){
     choices: ['同じ', '違う'],
     response_allowed_while_playing: false,
     on_finish: function(data){
-          if(data.button_pressed == data.button){
+          if(data.button_pressed == trial_num2[i]].button){
                 data.correct = true;
           } else {
             data.correct = false;
@@ -128,7 +136,7 @@ jsPsych.init({
     timeline: timeline,
     show_progress_bar: true,
     message_progress_bar: '実験終了まで',
-    on_finish: function(){
-       jsPsych.data.displayData();
+    on_finish: function(data){
+       console.log('これで実験は終わりました。ご協力ありがとうございました。');
     }
 });
