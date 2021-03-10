@@ -41,32 +41,32 @@ timeline.push(test_ok);
 /*実験の練習問題*/
 
 
-var trial_num = [1, 2, 3, 4, 5]
+var trial_num = [0, 1, 2, 3, 4]
 var trial_num2 = jsPsych.randomization.shuffle(trial_num);
 
 var trial1 = {
   stimulus: 'sound/aa261.wav',
-  button: '0'
+  button: 0
 };
 
 var trial2 = {
   stimulus: 'sound/ax263.wav',
-  button: '1'
+  button: 1
 };
 
 var trial3 = {
   stimulus: 'sound/ax264.wav',
-  button: '1'
+  button: 1
 };
 
 var trial4 = {
   stimulus: 'sound/ax265.wav',
-  button: '1'
+  button: 1
 };
 
 var trial5 = {
   stimulus: 'sound/ax276.wav',
-  button: '1'
+  button: 1
 };
 
 
@@ -86,25 +86,26 @@ var trial_button = [
   trial5.button,
 ];
 
-for (var i in trial_num2){
+for (const i of trial_num2){
   jsPsych.data.addProperties({
-    trial:trial_num2
- });  
-  
-//practice session
-
+    trial: trial_num2[i]
+  });
+  // TODO: payload で音声を読み込む
+  //practice session
   timeline.push({
     type: 'audio-button-response',
-    stimulus: trial_audio[trial_num2[i]],
+    stimulus: trial_audio[i],
     prompt: "<p>この二つの音声は同じですか</p>",
     choices: ['同じ', '違う'],
     response_allowed_while_playing: false,
     on_finish: function(data){
-          if(data.button_pressed == trial_num2[i].button){
-                data.correct = true;
+          if(data.response == trial_button[i]){
+          　data.correct = true;
           } else {
             data.correct = false;
             }
+          console.log('The trial is over! Here is all the data: '+JSON.stringify(data));
+
     }
   })
   
