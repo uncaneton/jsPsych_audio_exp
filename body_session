@@ -1,0 +1,131 @@
+// It is necessary to specify UTF-8 and other stylistic stuff here.
+// This may be possible using <!DOCTYPE html> and <head>...etc
+
+var preload = {
+    type: 'preload',
+    auto_preload: true 
+}
+
+var timeline = [] ;
+
+var fullscreen = {
+  type: 'fullscreen',
+  fullscreen_mode: true
+};
+timeline.push(fullscreen)
+
+// Greeting
+timeline.push({
+  type: "html-button-response",
+  stimulus: "<p>この度は実験に協力していただき、ありがとうございます。</p>" + 
+  "<p>実験は大体7分程度かかります。</p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+});
+
+// Questionnaire
+timeline.push({
+  type: "html-button-response",
+  stimulus: "<p>この実験ではピアノのメロディーを2回聞いてもらい、その2つのメロディーが同じであったか違っていたかを答えてもらいます。</p>" +
+   "<p>実験を始める前に、簡単なアンケートに答えていただきます。</p>"+
+   "<p>ひらがなと漢字は使わずに全てアルファベットで回答してください!!!!!!!</p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+});
+
+var form_name = {
+  type: 'survey-html-form',
+  preamble: '<p><b>好きなニックネームを書いてください。</b> </p>',
+  html: '<p> <input name="first" type="text" />',
+};
+
+var form_device = {
+  type: 'html-button-response',
+  stimulus: '<p>今使っているデバイスを教えてください。</p>',
+  choices: ['パソコン', 'スマホ'],
+  response_ends_trial: true,
+};
+
+var form_earPhone = {
+  type: 'html-button-response',
+  stimulus: '<p>今イヤホンまたはヘッドホンを使っていますか？</p>',
+  choices: ['はい', 'いいえ'],
+  response_ends_trial: true,
+};
+
+var form_devICE = {
+  type: 'survey-html-form',
+  preamble: '<p>今使っているデバイスについて具体的に教えてください</p>',
+  html: '<p> <input name="first" type="text" />',
+};
+
+timeline.push(form_name, form_device, form_earPhone, form_devICE);
+
+/*instructions*/
+
+var instructions = {
+  type: "html-button-response",
+  stimulus:"<p>それでは、これから実験を始めます。</p>" + 
+      "<p>これからピアノのメロディーを2回流します。</p>" +
+      "<p>2つのメロディーが同じだと思ったら[同じ]をクリックしてください。</p>" +
+      "<p>2つのメロディーが違うと思ったら[違う]をクリックしてください。</p>"　+
+      "<p>全部で40回あり、6分程度で終わるはずです </p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+};
+
+timeline.push(instructions);
+
+var instructions = {
+  type: "html-button-response",
+  stimulus:"<p>それでは、これからはじめます。</p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+};
+
+timeline.push(instructions);
+
+
+// AX discrimination with A3
+// Make up stimulus set and shuffle
+var stim = ['aalll220.wav', 'aalll221.wav', 'aalll222.wav', 'aalll224.wav', 'aalll227.wav', 'aalll235.wav', 'aalll220b.wav', 'aalll221b.wav', 'aalll222b.wav', 'aalll224b.wav', 'aalhl221.wav', 'aalhl222.wav', 'aalhl224.wav', 'aalhl227.wav', 'aalhl235.wav', 'aalhh221.wav', 'aalhh222.wav', 'aalhh224.wav', 'aalhh227.wav', 'aalhh235.wav', 'axlhl221.wav', 'axlhl222.wav', 'axlhl224.wav', 'axlhl227.wav', 'axlhl235.wav', 'axlhh221.wav', 'axlhh222.wav', 'axlhh224.wav', 'axlhh227.wav', 'axlhh235.wav', 'xalhl221.wav', 'xalhl222.wav', 'xalhl224.wav', 'xalhl227.wav', 'xalhl235.wav', 'xalhh221.wav', 'xalhh222.wav', 'xalhh224.wav', 'xalhh227.wav', 'xalhh235.wav'];
+stim = stim.sort(() => Math.random() - 0.5);
+
+// Start loop
+var n = stim.length
+for (var i = 0; i < n; i++){
+  timeline.push({
+      type: 'audio-button-response',
+      stimulus: stim[i],
+      choices: ['同じ', '違う'],
+      prompt: "<p></p>",
+      response_allowed_while_playing: false,
+  });
+
+  timeline.push({
+      type: 'html-button-response',
+      stimulus: "<p>ありがとうございました。</p>" +
+      "<p>NEXTを押して次のメロディーを聞いてください。</p>",
+      choices: ['NEXT'],
+      response_ends_trial: true,
+  });
+}
+
+/*ending the experiment*/
+
+timeline.push({
+    type: 'html-button-response',
+    stimulus: '<p>これで実験終了です。ご協力いただきありがとうございました。</p>'+
+    '<p>別のデバイス環境でまたやってみてくださいね</p>',
+    choices: ['Thanks a lot!!!'],
+    response_ends_trial: true,
+});
+
+jsPsych.init({
+      timeline: timeline,
+      show_progress_bar: true,
+      message_progress_bar: '実験終了まで',
+      on_finish: function(){
+        jsPsych.data.displayData();
+      }
+})
