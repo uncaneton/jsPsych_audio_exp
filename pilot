@@ -1,0 +1,315 @@
+///////////////// kamoPhonPilot. 17 March, 2021
+
+/////// preupload and show up screen
+var preload = {
+    type: 'preload',
+    auto_preload: true 
+}
+
+var timeline = [] ;
+
+
+//browser check
+var check_browser = {
+    type: 'image-button-response',
+    stimulus: 'img/browser2.jpg',
+    choices: ['OK'],
+    on_finish: function(data){
+          if(data.response == 1){
+          　window.close();
+          }
+    }
+};
+
+timeline.push(check_browser);
+
+
+// PC, headphone check
+timeline.push({
+  type: "html-button-response",
+  stimulus: "<p>本実験では、ピアノの音を聞きます。</p>"+
+  "<p>静かな環境で、パソコンとイヤホンまたはヘッドホンを使って参加してください。</p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+});
+
+
+//fullscreen
+var fullscreen = {
+  type: 'fullscreen',
+  fullscreen_mode: false
+};
+timeline.push(fullscreen)
+
+/////// Greeting
+timeline.push({
+  type: "html-button-response",
+  stimulus: "<p>この度は実験に協力していただき、ありがとうございます。</p>" + 
+  "<p>この実験ではピアノのメロディーを2回聞いてもらい、その2つのメロディーが同じであったか違っていたかを答えてもらいます。</p>" +
+  "<p>実験は練習セッションを含めて、大体6分程度かかります。</p>" +
+  "<p>実験の後に簡単なアンケート (1-2分) があります。</p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+});
+
+/////// Ask name. This part will be removed in the real experiment, as an ID will be assigned to a participant.
+var form_name = {
+  type: 'survey-html-form',
+  preamble: "<p>お名前を教えてください。</p>" +
+  "<p>実験後のアンケートでもお名前を伺いますので、その時にも同じ様にご記入ください。</p>" +
+  "<p>※アルファベットで記入してください (例：daiki)</p>",
+  html: '<p> <input name="first" type="text" />',
+};
+
+timeline.push(form_name);
+
+/////// Practice. This part will be made up by Fanfanpharmacy.......
+
+var instruction = {
+  type: 'html-button-response',
+  stimulus: "<p>ではまず音量を確認しましょう。</p>"+
+  "<p>今から音が再生されるので、はっきり聞こえるよう音量を調整してください。</p>",
+  margin_vertical: '10px',
+  choices: ['OK'],
+};
+  
+timeline.push(instruction);
+/*音量調整*/
+
+var volumetest = {
+  type: 'audio-button-response',
+  stimulus: "sound/pianolong.mp3",
+  choices:['はい、音量は大丈夫です'],
+  prompt: "<p>ピアノの音楽ははっきり聞こえていますか。</p>"+
+    "<p>はっきり聞こえない場合は音量をあげてください。</p>",
+  response_allowed_while_playing: true,
+};
+timeline.push(volumetest);
+  
+var test_ok = {
+  type: 'html-button-response',
+  choices: ['OK'],
+  margin_vertical: '20px',　
+  stimulus: "<p>ありがとうございました。まず実験の練習セッションを行います。</p>"+
+      "<p>2つのメロディーが同じだと思ったら[同じ]をクリックしてください。</p>" +
+      "<p>2つのメロディーが違うと思ったら[違う]をクリックしてください。</p>"　+
+      "ではやってみましょう！"
+};
+
+timeline.push(test_ok);
+  
+  
+/*practice: same vs. very different*/
+
+  timeline.push({
+    type: 'audio-button-response',
+    stimulus: 'sound/aa261.wav',
+    prompt: "",
+    choices: ['<h3>同じ</h3>', '<h3>違う</h3>'],
+    margin_horizontal: '30px',
+    response_allowed_while_playing: false,
+    on_finish: function(data){
+          if(data.response == 0){
+          　data.correct = true;
+          } else {
+            data.correct = false;
+            }
+          console.log('The trial is over! Here is all the data: '+JSON.stringify(data));
+
+    }
+  })
+  
+    timeline.push({
+      type: 'html-button-response',
+      choices: ['次の練習問題に進む'],
+      stimulus: function(){
+        let last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+          if (last_trial_correct) {
+          return "<p>よくできました! 2つのメロディは全く同じものでしたね。</p>";
+       } else {
+          return "<p>残念でした。2つのメロディは全く同じものでした。</p>";
+       }
+   }
+  });
+
+
+  timeline.push({
+    type: 'audio-button-response',
+    stimulus: 'sound/ax276.wav',
+    prompt: "",
+    choices: ['<h3>同じ</h3>', '<h3>違う</h3>'],
+    margin_horizontal: '30px',
+    response_allowed_while_playing: false,
+    on_finish: function(data){
+          if(data.response == 1){
+          　data.correct = true;
+          } else {
+            data.correct = false;
+            }
+          console.log('The trial is over! Here is all the data: '+JSON.stringify(data));
+
+    }
+  })
+  
+    timeline.push({
+      type: 'html-button-response',
+      choices: ['次の練習問題に進む'],
+      stimulus: function(){
+        let last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+          if (last_trial_correct) {
+          return "<p>よくできました! 2つのメロディは大きく異なっていましたね。</p>";
+       } else {
+          return "<p>残念でした。2つのメロディは大きく異なっていました。</p>";
+       }
+   }
+  });
+  
+//random
+
+var trial_num = [0, 1, 2]
+var trial_num2 = jsPsych.randomization.shuffle(trial_num);
+
+var trial1 = {
+  stimulus: 'sound/ax263.wav',
+  button: 1
+};
+
+var trial2 = {
+  stimulus: 'sound/ax264.wav',
+  button: 1
+};
+
+var trial3 = {
+  stimulus: 'sound/ax265.wav',
+  button: 1
+};
+
+
+
+var trial_audio = [
+  trial1.stimulus,
+  trial2.stimulus,
+  trial3.stimulus,
+];
+
+var trial_button = [
+  trial1.button,
+  trial2.button,
+  trial3.button,
+];
+
+for (const i of trial_num2){
+  jsPsych.data.addProperties({
+    trial: trial_num2[i]
+  });
+  // TODO: payload で音声を読み込む
+  
+  timeline.push({
+    type: 'audio-button-response',
+    stimulus: trial_audio[i],
+    prompt: "",
+    choices: ['<h3>同じ</h3>', '<h3>違う</h3>'],
+    margin_horizontal: '30px',
+    response_allowed_while_playing: false,
+    on_finish: function(data){
+          if(data.response == trial_button[i]){
+          　data.correct = true;
+          } else {
+            data.correct = false;
+            }
+          console.log('The trial is over! Here is all the data: '+JSON.stringify(data));
+
+    }
+  })
+  
+    timeline.push({
+      type: 'html-button-response',
+      choices: ['次の練習問題に進む'],
+      stimulus: function(){
+        let last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+          if (last_trial_correct) {
+          return "<p>よくできました! 2つのメロディは少しだけ違っていましたね。</p>";
+       } else {
+          return "<p>残念でした。2つのメロディは少しだけ違っていました。</p>";
+       }
+   }
+  });
+  
+}
+
+var practice_instruction = {
+  type: 'html-button-response',
+  stimulus: '<p>ありがとうございました。では本番に入りましょう。</p>',
+  choices: ['OK'],
+  prompt: "<p></p>"
+};
+  
+timeline.push(practice_instruction);
+
+
+/////// Main experiment
+// instruction
+var instructions = {
+  type: "html-button-response",
+  stimulus:"<p>それでは、これから本番の実験です。</p>" + 
+      "<p>今行っていただいた練習と同様に、ピアノのメロディーが2回流れます。</p>" +
+      "<p>2つのメロディーが同じだと思ったら[同じ]をクリックしてください。</p>" +
+      "<p>2つのメロディーが違うと思ったら[違う]をクリックしてください。</p>"　+
+      "<p>全部で40回あり、5分程度で終わるはずです </p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+};
+
+timeline.push(instructions);
+
+var instructions = {
+  type: "html-button-response",
+  stimulus:"<p>それでは、これからはじめます。</p>",
+  choices: ['OK'],
+  response_ends_trial: true,
+};
+
+timeline.push(instructions);
+
+// Make up stimulus set and shuffle
+var stim = ['aalll220.wav', 'aalll221.wav', 'aalll222.wav', 'aalll224.wav', 'aalll227.wav', 'aalll235.wav', 'aalll220b.wav', 'aalll221b.wav', 'aalll222b.wav', 'aalll224b.wav', 'aalhl221.wav', 'aalhl222.wav', 'aalhl224.wav', 'aalhl227.wav', 'aalhl235.wav', 'aallh221.wav', 'aallh222.wav', 'aallh224.wav', 'aallh227.wav', 'aallh235.wav', 'axlhl221.wav', 'axlhl222.wav', 'axlhl224.wav', 'axlhl227.wav', 'axlhl235.wav', 'axllh221.wav', 'axllh222.wav', 'axllh224.wav', 'axllh227.wav', 'axllh235.wav', 'xalhl221.wav', 'xalhl222.wav', 'xalhl224.wav', 'xalhl227.wav', 'xalhl235.wav', 'xallh221.wav', 'xallh222.wav', 'xallh224.wav', 'xallh227.wav', 'xallh235.wav'];
+stim = stim.sort(() => Math.random() - 0.5);
+
+// Start loop
+var n = stim.length
+for (var i = 0; i < n; i++){
+  timeline.push({
+      type: 'audio-button-response',
+      stimulus: stim[i],
+      choices: ['<h3>同じ</h3>', '<h3>違う</h3>'],
+      margin_horizontal: '30px',
+      prompt: "<p></p>",
+      response_allowed_while_playing: false,
+  });
+
+  timeline.push({
+      type: 'html-button-response',
+      stimulus: "<p>ありがとうございました。</p>" +
+      "<p>NEXTを押して次のメロディーを聞いてください。</p>",
+      choices: ['NEXT'],
+      response_ends_trial: true,
+  });
+}
+
+/////// End the experiment and proceed to the questionnaire.
+timeline.push({
+    type: 'html-button-response',
+    stimulus: '<p>これで実験終了です。ご協力いただきありがとうございました。</p>'+
+    '<p>最後にアンケートにご回答ください。</p>',
+    choices: ['アンケートへ進む'],
+    response_ends_trial: true,
+});
+
+jsPsych.init({
+    timeline: timeline,
+    show_progress_bar: true,
+    message_progress_bar: '実験終了まで',
+    on_finish: function(data){
+      console.log('end of the experiment');
+      window.location.href = "https://forms.gle/L4KEUTsGRiqfpUfZ7"}
+});
